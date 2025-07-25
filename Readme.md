@@ -66,3 +66,26 @@
 - **Hosting**: Vercel for frontend; render for backend
 - **CI/CD**: GitHub Actions for automation/testing
 - **Monitoring**: Sentry (frontend/backend errors), Datadog/NewRelic (infrastructure)
+
+
+dcoders/
+├── client/                 --> Vite + React + Tailwind
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   ├── context/
+│   │   └── main.jsx
+│   └── index.html
+│
+├── server/                 --> Express + MongoDB + Auth + API
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── middlewares/
+│   ├── utils/
+│   └── index.js
+│
+├── .env
+├── package.json
+└── README.md
