@@ -13,11 +13,13 @@ const Profile = () => {
   React.useEffect(() => {
     axios.get('/api/users/me', { withCredentials: true })
       .then(res => {
-        setUser(res.data);
+        // Ensure posts is always an array
+        const safeUser = { ...res.data, posts: Array.isArray(res.data.posts) ? res.data.posts : [] };
+        setUser(safeUser);
         setEditData({
-          username: res.data.username,
-          bio: res.data.bio || '',
-          profilePicture: res.data.profilePicture || '',
+          username: safeUser.username,
+          bio: safeUser.bio || '',
+          profilePicture: safeUser.profilePicture || '',
         });
       })
       .catch(() => setUser(null));
@@ -175,16 +177,16 @@ const Profile = () => {
       <div className="w-full max-w-4xl mx-auto mt-12">
         <div className="flex items-center gap-3 mb-6">
           <Grid size={20} className="text-indigo-500" />
-          <span className="font-bold text-lg">Posts: {user.posts.length}</span>
+          <span className="font-bold text-lg">Posts: {user.posts?.length ?? 0}</span>
         </div>
-        {user.posts.length === 0 ? (
+        {(!user.posts || user.posts.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Smile size={48} className="text-gray-400 mb-4" />
             <div className="text-gray-500 text-lg">No posts yet</div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {user.posts.map(post => (
+            {user.posts?.map(post => (
               <motion.div
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.98 }}
