@@ -1,46 +1,64 @@
 import React, { useState } from 'react';
 import { User, Pencil, LogOut, Grid, Image, Smile } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const dummyUser = {
-  username: 'devcoder',
-  email: 'dev@dcoders.com',
-  bio: 'Full Stack Developer. Love to code, debug, and build cool things!\nAlways learning, always shipping.',
-  profilePicURL: 'https://placehold.co/160x160?text=User',
-  posts: [
-    { _id: '1', image: 'https://placehold.co/300x300?text=Code+1', likes: 12, comments: 3 },
-    { _id: '2', image: 'https://placehold.co/300x300?text=Code+2', likes: 8, comments: 1 },
-    { _id: '3', image: 'https://placehold.co/300x300?text=Code+3', likes: 5, comments: 0 },
-    // Add more or leave empty for "No posts yet"
-  ],
-};
+import axios from 'axios';
 
 const Profile = () => {
-  const [user, setUser] = useState(dummyUser);
+  const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [editData, setEditData] = useState({ username: user.username, bio: user.bio, profilePicURL: user.profilePicURL });
+  const [editData, setEditData] = useState({ username: '', bio: '', profilePicture: '' });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  React.useEffect(() => {
+    axios.get('/api/users/me', { withCredentials: true })
+      .then(res => {
+        setUser(res.data);
+        setEditData({
+          username: res.data.username,
+          bio: res.data.bio || '',
+          profilePicture: res.data.profilePicture || '',
+        });
+      })
+      .catch(() => setUser(null));
+  }, []);
 
   // Assume this is the logged-in user's profile
   const isOwnProfile = true;
 
   const handleEdit = () => setEditMode(true);
   const handleCancel = () => {
-    setEditData({ username: user.username, bio: user.bio, profilePicURL: user.profilePicURL });
+    setEditData({ username: user.username, bio: user.bio, profilePicture: user.profilePicture });
     setEditMode(false);
   };
-  const handleSave = () => {
+  const handleSave = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setUser({ ...user, ...editData });
+    try {
+      const res = await axios.put('/api/users/me', editData, { withCredentials: true });
+      setUser(res.data.user);
       setEditMode(false);
-      setLoading(false);
-    }, 1000);
+    } catch (err) {
+      // handle error
+    }
+    setLoading(false);
   };
   const handleLogout = () => {
     // Add logout logic
     alert('Logged out!');
   };
+  const handleProfilePicChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    // Simulate upload: in real app, upload to S3/Cloudinary and get URL
+    setTimeout(() => {
+      const url = URL.createObjectURL(file); // For demo, use local preview
+      setEditData(prev => ({ ...prev, profilePicture: url }));
+      setUploading(false);
+    }, 1000);
+  };
+
+  if (!user) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-slate-900 text-gray-800 dark:text-slate-100 py-10 px-4 flex flex-col items-center">
@@ -52,7 +70,7 @@ const Profile = () => {
           className="relative"
         >
           <img
-            src={user.profilePicURL}
+            src={user.profilePicture || 'https://placehold.co/160x160?text=User'}
             alt="Profile"
             className="w-40 h-40 rounded-full shadow-md ring-2 ring-indigo-500 object-cover bg-white dark:bg-slate-800"
           />
@@ -62,11 +80,19 @@ const Profile = () => {
               whileTap={{ scale: 0.95 }}
               className="absolute bottom-2 right-2 bg-white dark:bg-slate-900 border border-indigo-500 text-indigo-500 p-2 rounded-full shadow hover:bg-indigo-50 dark:hover:bg-slate-800 transition"
               title="Edit profile picture"
-              onClick={handleEdit}
+              onClick={() => document.getElementById('profile-pic-input').click()}
             >
               <Pencil size={18} />
             </motion.button>
           )}
+          <input
+            id="profile-pic-input"
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleProfilePicChange}
+            disabled={uploading}
+          />
         </motion.div>
         {/* Profile Info */}
         <div className="flex-1 flex flex-col gap-3">
@@ -121,12 +147,21 @@ const Profile = () => {
               value={editData.bio}
               onChange={e => setEditData({ ...editData, bio: e.target.value })}
             />
-            <label className="font-semibold">Profile Picture URL</label>
-            <input
-              className="bg-slate-100 dark:bg-slate-700 rounded px-3 py-2 text-gray-800 dark:text-white outline-none"
-              value={editData.profilePicURL}
-              onChange={e => setEditData({ ...editData, profilePicURL: e.target.value })}
-            />
+            <label className="font-semibold">Profile Picture</label>
+            <div className="flex items-center gap-3">
+              <img
+                src={editData.profilePicture || 'https://placehold.co/64x64?text=User'}
+                alt="Preview"
+                className="w-16 h-16 rounded-full object-cover border-2 border-cyan-400"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleProfilePicChange}
+                disabled={uploading}
+              />
+              {uploading && <span>Uploading...</span>}
+            </div>
             <div className="flex gap-2 mt-4 justify-end">
               <button onClick={handleCancel} className="border border-gray-400 text-gray-500 px-4 py-2 rounded">Cancel</button>
               <button onClick={handleSave} disabled={loading} className="bg-indigo-500 text-white px-4 py-2 rounded font-bold hover:bg-indigo-600 disabled:opacity-60">

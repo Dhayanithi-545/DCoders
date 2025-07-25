@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Bookmarks from './pages/Bookmarks';
 import CreatePost from './pages/CreatePost';
 import FullPost from './pages/FullPost';
+import Profile from './pages/Profile';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/create" element={<CreatePost />} />
         <Route path="/post/:postId" element={<FullPost />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
         {/* Add /dashboard and other routes as needed */}
       </Routes>

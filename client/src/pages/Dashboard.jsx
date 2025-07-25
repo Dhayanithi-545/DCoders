@@ -15,9 +15,9 @@ axios.defaults.baseURL = 'http://localhost:9001'; // or your deployed backend UR
 axios.defaults.withCredentials = true;
 
 const navItems = [
-  { label: 'Home', icon: Home },
+  { label: 'Home', icon: Home, to: '/dashboard' },
   { label: 'New Post', icon: PlusCircle, to: '/create' },
-  { label: 'My Profile', icon: UserCircle },
+  { label: 'My Profile', icon: UserCircle, to: '/profile' },
   { label: 'Bookmarks', icon: Bookmark, to: '/bookmarks' },
 ];
 
@@ -39,13 +39,13 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-[260px_1fr] bg-slate-900 text-slate-100">
       {/* Sidebar */}
-      <aside className={`bg-slate-800 transition-all duration-200 ${sidebarOpen ? 'w-full md:w-[260px]' : 'w-16 md:w-16'} flex flex-col min-h-screen`}>
+      <aside className={`sticky top-0 bg-slate-800 transition-all duration-200 ${sidebarOpen ? 'w-full md:w-[260px]' : 'w-16 md:w-16'} flex flex-col min-h-screen z-20`}>
         <div className="flex items-center justify-between p-4 border-b border-slate-700">
           {sidebarOpen && (
             <span className="font-inter text-slate-100 text-sm font-bold">DCoders</span>
           )}
           <button
-            className="md:hidden ml-auto text-slate-100"
+            className="ml-auto text-slate-100"
             onClick={() => setSidebarOpen(v => !v)}
             aria-label="Toggle sidebar"
           >
