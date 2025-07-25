@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Lock, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import devBigIllustration from '../assets/devBigillustration.png';
 
 const Login = () => {
   const [form, setForm] = useState({ identifier: '', password: '' });
@@ -34,7 +35,7 @@ const Login = () => {
     <div className="min-h-screen flex bg-slate-900 text-slate-100">
       {/* Left Side */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-slate-800">
-        <img src="https://placehold.co/400x400?text=Dev+Image" alt="Dev Illustration" className="max-w-xs mx-auto" />
+        <img src={devBigIllustration} alt="Dev Illustration" className="max-w-xs mx-auto" />
       </div>
       {/* Right Side */}
       <div className="flex flex-col w-full md:w-1/2 items-center justify-center relative p-8">
