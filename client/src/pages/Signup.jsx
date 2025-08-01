@@ -13,6 +13,8 @@ const Signup = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const api = import.meta.env.BACKEND_URL || 'http://localhost:9001';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -21,7 +23,8 @@ const Signup = () => {
       return;
     }
     try {
-      const res = await fetch('http://localhost:9001/api/auth/signup', {
+      const res = await fetch(`${api}/api/auth/signup`, {
+        
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -13,11 +13,13 @@ const Login = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const api = import.meta.env.BACKEND_URL || 'http://localhost:9001';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://localhost:9001/api/auth/login', {
+      const res = await fetch( `${api}/api/auth/login`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
